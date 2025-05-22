@@ -125,34 +125,3 @@ def main_routine():
     else: quit()
 
 main_routine()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
