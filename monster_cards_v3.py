@@ -148,8 +148,8 @@ def main_routine():
         main_routine()
 
     elif choice == 'Search for a Card':
-        name = easygui.enterbox("Enter the name of the card you would like "
-            "to search for", "Catalogue Search")
+        name = easygui.enterbox("Enter the name of the card you would "
+            "like to search for", "Catalogue Search")
         search_catalogue(name.title())
         main_routine()
 
