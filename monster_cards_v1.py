@@ -1,6 +1,6 @@
 """ Program for a friend which creates a card catalogue for their game.
 Jade Akinbo
-v1 - Store Details and Main Routine setup
+v1 - Store Details and Main Routine Setup
 """
 
 import easygui
@@ -80,8 +80,8 @@ catalogue = \
 }
 
 def main_routine():
-    easygui.buttonbox("Welcome to the Dungeons & Monsters card database\nPick "
-        "an action", choices = ['Exit'])
+    easygui.buttonbox("Welcome to the Dungeons & Monsters card "
+        "database\nPick an action", choices = ['Exit'])
 main_routine()
 
 
