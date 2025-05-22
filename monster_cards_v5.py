@@ -1,6 +1,6 @@
 """ Program for a friend which creates a card catalogue for their game.
 Jade Akinbo
-v5 - print_catalogue()
+v5 - search_catalogue()
 """
 
 import easygui
