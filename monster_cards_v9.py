@@ -1,6 +1,7 @@
 """ Program for a friend which creates a card catalogue for their game.
 Jade Akinbo
 v9  - trialling: delete_card()
+        - logic & simplicity
 """
 
 import easygui
