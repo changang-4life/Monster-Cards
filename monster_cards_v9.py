@@ -34,7 +34,6 @@ catalogue = \
         'Speed': '18',
         'Stealth': '14',
         'Cunning': '5'
-
     },
 
     'Rotthing': {
