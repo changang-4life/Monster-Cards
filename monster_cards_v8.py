@@ -1,6 +1,8 @@
 """ Program for a friend which creates a card catalogue for their game.
 Jade Akinbo
 v8  - trialling: edit_card()
+        - edit card split into two
+        - logic & simplicity changes for edit stat
 """
 
 import easygui
@@ -253,85 +255,51 @@ def edit_card_name(card_name):
             catalogue[new_name] = catalogue[card_name]
             del catalogue[card_name]
             break
-        elif confirm == "Re-enter":
-            continue
-        else:
-            break
+        elif confirm == "Re-enter": continue
+        else: break
 
 def edit_card_stat(card_name):
-    global old_value
     while True:
         stat_choice = easygui.buttonbox("Choose which stat of the "
             f"{card_name} you would like to edit", "Stat Choice",
-            choices=["Strength", "Speed", "Stealth", "Cunning"])
+            choices=["Strength", "Speed", "Stealth", "Cunning", "Cancel"])
 
-        value_input = easygui.integerbox("Enter the value you would "
+        if stat_choice == "Cancel":
+            break
+
+        value_choice = easygui.integerbox("Enter the value you would "
             f"like to change the {stat_choice.lower()} stat to",
             "Enter a Value", lowerbound=1, upperbound=25)
 
-        if value_input is None:
-            break
+        if value_choice is None: break
 
-        og_card = catalogue[card_name]
-        items = list(og_card.items())
-
-        if stat_choice == "Strength":
-            old_value = items[0][1]
-        elif stat_choice == "Speed":
-            old_value = items[1][1]
-        elif stat_choice == "Stealth":
-            old_value = items[2][1]
-        elif stat_choice == "Cunning":
-            old_value = items[3][1]
-
-        updated_card = {}
-
-        items_list = []
-        for key, value in og_card.items():
-            items_list.append(key)
-            items_list.append(value)
-
-        for key, value in og_card.items():
-            if key == stat_choice and value == old_value:
-                print(f"key: {key}")
-                print(f"old value: {value}")  # print checks
-
-                updated_card[key] = value_input  # notes: instead of
-                # th, the new main course
-                # name
-                # is added, along with its regular value/price
-            else:
-                updated_card[key] = value
-                # key value pair that the iteration is up to gets added as
-                # normal to the empty updated_card dictionary
+        old_value = catalogue[card_name][stat_choice]
 
         confirm = easygui.buttonbox("Confirm changing the "
             f"{stat_choice.lower()} for the {card_name} card from {old_value} "
-            f"to {value_input}?", "Confirmation",
+            f"to {value_choice}?", "Confirmation",
             choices=["Confirm", "Revert Changes"])
 
         if confirm == "Confirm":
-            updated_card[stat_choice] = value_input
-            catalogue[card_name] = updated_card
+            catalogue[card_name][stat_choice] = value_choice
 
             print(f"\nedit_card: changes made to {card_name} card\n")
-            for key, value in updated_card.items():
+            for key, value in catalogue[card_name].items():
                 print(f"  {key}: {value}")
 
             edit_result = card_name + "\n" + "\n".join([f"  {key}: {value}"
-                for key, value in updated_card.items()])
+                for key, value in catalogue[card_name].items()])
             result_name = "Updated " + card_name.title() + " Card"
 
             easygui.msgbox(edit_result, result_name)
             break
-        else:
-            break
+        else: break
 
 def main_routine():
     choice = easygui.buttonbox("Welcome to the Dungeons & Monsters card "
         "database\nChoose an action", "Dungeons & Monsters Card Database",
-        choices = ['Add a Card', 'Search for a Card',
-        'Edit Card', 'Print the Catalogue', 'Delete (Warning)', 'Exit'])
+        choices = ["Add a Card", "Search for a Card",
+        "Edit Card", "Print the Catalogue", "Delete (Warning)", "Exit"])
 
     if choice == 'Add a Card':
         add_card()
