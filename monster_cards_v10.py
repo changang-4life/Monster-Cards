@@ -5,6 +5,7 @@ v10 - Final Version
         - main_routine() calling fixes
         - changed stat data type from string to int for simplicity's sake
         - more descriptive comments
+        - other minor fix-ups / illogical code / inconsistencies
 """
 
 import easygui
@@ -84,20 +85,17 @@ catalogue = \
 
 def string_check(name):
     """ Only allows names with letters and spaces, must be at least 4
-    characters long (excluding spaces) but not more than 30 characters long."""
+    characters long (excluding spaces) but not more than 15 characters long."""
 
     while True:
         if name is None: return None
-            # executes if user hits cancel while string checking, goes back to
-                # start screen. when the main function the string check is
-                # used in sees that the name has been returned as None,
-                # it will understand that the user would like to cancel and
-                # go back to the start screen
+        # if user chooses to cancel input, None is returned so parent
+            # function can handle the rest
         else:
             name_stripped = name.replace(" ", "")
             if name_stripped.isalpha() and 4 <= len(name_stripped) <= 15:
-                # character length checker that does not allow names under 4
-                    # characters and names over 15
+            # character length checker that does not allow names under 4
+                # characters and names over 15
                 return name.title()
             else: # if the character length is invalid
                 name = easygui.enterbox("Enter a valid name\n(Letters and"
@@ -106,77 +104,78 @@ def string_check(name):
 
 def add_card():
     """ Function which allows the user to add a card to the catalogue """
+    while True:
+        card_name = easygui.enterbox("Enter the name of your new card",
+            "Card Name")
+        card_name = string_check(card_name) # string error checking
 
-    card_name = easygui.enterbox("Enter the name of your new card",
-        "Card Name")
-    card_name = string_check(card_name) # string error checking
+        if card_name in catalogue.keys():
+            # executes if the name the user enters is already on the catalogue
+            add_choice = easygui.buttonbox(f"{card_name} is already on the "
+                f"catalogue!","Card Already on Catalogue",
+                choices = ["Enter a new name", "Cancel"])
+            if add_choice == "Enter a new name":
+                continue
+            else: return
 
-    if card_name in catalogue.keys():
-        # executes if the name the user enters is not on the catalogue
-        choice = easygui.buttonbox(f"{card_name} is already on the "
-            f"catalogue!","Card Already on Catalogue",
-            choices = ["Enter a new name", "Cancel"])
-        if choice == "Enter a new name":
-            add_card()
-            return
-        else: return
+        card_strength = easygui.integerbox("Enter the strength stat",
+            "Strength Value", lowerbound = 1, upperbound = 25)
+        if card_strength is None: return
 
-    card_strength = easygui.integerbox("Enter the strength stat",
-        "Strength Value", lowerbound = 1, upperbound = 25)
-    if card_strength is None: return
+        card_speed = easygui.integerbox("Enter the speed stat",
+            "Speed Value", lowerbound = 1, upperbound = 25)
+        if card_speed is None: return
 
-    card_speed = easygui.integerbox("Enter the speed stat",
-        "Speed Value", lowerbound = 1, upperbound = 25)
-    if card_speed is None: return
+        card_stealth = easygui.integerbox("Enter the stealth stat",
+            "Stealth Value", lowerbound = 1, upperbound = 25)
+        if card_stealth is None: return
 
-    card_stealth = easygui.integerbox("Enter the stealth stat",
-        "Stealth Value", lowerbound = 1, upperbound = 25)
-    if card_stealth is None: return
+        card_cunning = easygui.integerbox("Enter the cunning stat",
+            "Cunning Value", lowerbound = 1, upperbound = 25)
+        if card_cunning is None: return
 
-    card_cunning = easygui.integerbox("Enter the cunning stat",
-        "Cunning Value", lowerbound = 1, upperbound = 25)
-    if card_cunning is None: return
+        # ^^ allows the user to enter card strength, speed, stealth and cunning
+            # stats
 
-    # ^^ allows the user to enter card strength, speed, stealth and cunning
-        # stats
+        new_card = { # creates new card (dictionary) for the user inputs to be
+            # placed into
+            'Strength': card_strength,
+            'Speed': card_speed,
+            'Stealth': card_stealth,
+            'Cunning': card_cunning
+        }
 
-    new_card = { # creates new card (dictionary) for the user inputs to be
-        # placed into
-        'Strength': card_strength,
-        'Speed': card_speed,
-        'Stealth': card_stealth,
-        'Cunning': card_cunning
-    }
+        catalogue[card_name] = new_card # adds the new card dictionary and
+        # assigns its key to the name of the card the user wanted
 
-    catalogue[card_name] = new_card # adds the new card dictionary and
-    # assigns its key to the name of the card the user wanted
+        print(card_name + " Card")
+        for key, value in new_card.items():
+            print(f"    {key}: {value}") # displays card info in output
 
-    print(card_name + " Card")
-    for key, value in new_card.items():
-        print(f"    {key}: {value}") # displays card info in output
+        results = "\n".join([f"  {key}: {value}" for key, value in
+            new_card.items()])
+        result_name = card_name + " Card"
+        # ^^ formatting for easygui output
 
-    results = "\n".join([f"  {key}: {value}" for key, value in
-        new_card.items()])
-    result_name = card_name + " Card"
-    # ^^ formatting for easygui output
-
-    easygui.msgbox(result_name + "\n" + results,
-        "Card Successfully Added!")
+        easygui.msgbox(result_name + "\n" + results,
+            "Card Successfully Added!")
 
 def search_catalogue():
     """ Function for searching for an existing card within the catalogue """
 
-    card_name = easygui.enterbox("Enter the name of the card you would "
-        "like to search for", "Catalogue Search")
-    card_name = string_check(card_name)
-    if card_name is None: return # if the user decided to cancel while
-        # entering the card name
-
+    global search_choice
     while True:
-        found = False # used for error checking if the card the user enters
-        # is not on the catalogue
+        card_name = easygui.enterbox("Enter the name of the card you "
+            "would like to search for", "Catalogue Search")
+        card_name = string_check(card_name)
 
-        search_term = card_name
+        if card_name is None: return # if the user decided to cancel on card
+            # name input
+        found = False # used for error checking if the card the user enters
+            # is not on the catalogue
+        search_term = card_name # variable reassigned to a different name
+            # for simplicity
+
         for card, card_contents in catalogue.items():
             if card == search_term:
                 print("search_catalogue(): name found")
@@ -187,68 +186,81 @@ def search_catalogue():
                 search_results,"Here are your search results")
                 # ^^ displays search results
 
-                choice = easygui.buttonbox("Would you like to edit this "
-                    "card?", "Edit Searched Card", choices = ["Edit Name",
-                    "Edit Stat", "Cancel"]) # gives the user the option to
-                # quickly edit the card that they searched for
+                search_choice = easygui.buttonbox("Would you like to edit"
+                    " this card?", "Edit Searched Card", choices = [
+                    "Edit Name", "Edit Stat", "Cancel"]) # gives the
+                    # user the option to quickly edit the card that they
+                    # searched for
 
                 found = True # program registers that the search term is
-                # found so the if block below this for loop does not execute
+                    # found so the if block below this for loop does not
+                    # execute
 
-                if choice == "Edit Name": # if edit name is chosen
+                if search_choice == "Edit Name": # if edit name is chosen
                     edit_card_name(card_name)
                     break
-                elif choice == "Edit Stat": # if edit stat is chosen
+                elif search_choice == "Edit Stat": # if edit stat is chosen
                     edit_card_stat(card_name)
                     break
-                else: break
 
-        if not found: # executes if not found
+        if search_choice == "Cancel": break # else, function ends if user
+        # chose to cancel
+
+        if not found: # executes if card name not found
             print("search_catalogue(): name not found")
             easygui.msgbox(f"Sorry, {card_name} could not be"
             f" found.","Not Found")
-            break
 
-        else: break
+            choice = easygui.buttonbox("Would you like to enter "
+                "another card to search for?", "Search Again", choices =
+                ["Search for another card", "Cancel"])
+                # ^^ gives the user the option to either re-enter a card or
+                    # cancel
+
+            if choice == "Search for another card": continue # if user chooses
+            # to re-enter another card, function restarts
+            else: break # else function end
 
 def delete_card(card_name):
     """ Function which allows the user to delete a card from the catalogue """
 
-    card_name = string_check(card_name)
-    if card_name in catalogue:
-        print(f"\ndelete_card(): {card_name} is being deleted") # print check
+    while True:
+        card_name = string_check(card_name)
+        if card_name in catalogue:
+            print(f"\ndelete_card(): {card_name} is being deleted")
+            # print check
 
-        confirm = easygui.buttonbox("Confirm the deletion of "
-            f"the {card_name} card?", "Confirm Deletion",
-            choices=["Yes", "Cancel"]) # allows the user to choose
-            # whether they want to confirm deletion
+            confirm = easygui.buttonbox("Confirm the deletion of "
+                f"the {card_name} card?", "Confirm Deletion",
+                choices=["Yes", "Cancel"]) # allows the user to choose
+                # whether they want to confirm deletion
 
-        if confirm == "Yes": # if they want to confirm changes
-            del catalogue[card_name]
+            if confirm == "Yes": # if they want to confirm changes
+                del catalogue[card_name]
 
-            full_list = "\n\n".join([card + " Card\n" + "\n".join([
-                f"  {key}: {value}" for key, value in card_info.items()])
-                for card, card_info in catalogue.items()]) # formatting for
-                # easygui
+                full_list = "\n\n".join([card + " Card\n" + "\n".join([
+                    f"  {key}: {value}" for key, value in card_info.items()])
+                    for card, card_info in catalogue.items()]) # formatting for
+                    # easygui
 
-            easygui.msgbox("Here is the new catalogue\n\n" + full_list,
-                "Updated Catalogue")
+                easygui.msgbox("Here is the new catalogue\n\n" + full_list,
+                    "Updated Catalogue")
 
-        else: return # if the user does not want to confirm changes
+            else: break # if the user does not want to confirm changes
 
-    else: # executes if the card the user entered is not on the catalogue
-        print(f"delete_card(): {card_name} is not on catalogue")
-        choice = easygui.buttonbox(f"{card_name} is not on "
-            f"the catalogue.", "The card you want to delete is not"
-            " on the catalogue",choices = ["Enter a new name", "Cancel"])
-            # gives user the choice to enter a new name
+        else: # executes if the card the user entered is not on the catalogue
+            print(f"delete_card(): {card_name} is not on catalogue")
+            delete_choice = easygui.buttonbox(f"{card_name} is not on "
+                f"the catalogue.", "The card you want to delete is not"
+                " on the catalogue",choices = ["Enter a new name", "Cancel"])
+                # gives user the choice to either enter a new name
 
-        if choice == "Enter a new name":
-            card_name = easygui.enterbox("Please enter the name of "
-                "the card you would like to delete","Delete Card")
-            delete_card(card_name)
+            if delete_choice == "Enter a new name":
+                card_name = easygui.enterbox("Please enter the name of "
+                    "the card you would like to delete","Delete Card")
+                continue
 
-        else: return # or exit
+            else: break # or exit
 
 def print_catalogue():
     """ Function which allows the user to show the full catalogue """
@@ -268,6 +280,9 @@ def edit_card_name(card_name):
         new_name = easygui.enterbox("Please enter a new name for"
           f" the {card_name} card","New Name")
         new_name = string_check(new_name)
+
+        if new_name is None: # if user selected cancel upon input,
+            break # function quits
 
         if new_name in catalogue.keys(): # if the name they want to change
             # their card to is already in use, program warns them
@@ -312,12 +327,13 @@ def edit_card_stat(card_name):
         if value_choice == old_value: # if the user enters the same value
             # the stat already has, error checking loop executes
             while True:
-                choice = easygui.buttonbox(f"{card_name} "
+                edit_choice = easygui.buttonbox(f"{card_name} "
                     f"{stat_choice.lower()} already has this value! Please "
                     f"enter another value", "Invalid Stat Value Entered",
                     choices = ["Re-enter", "Cancel"])
 
-                if choice == "Re-enter": # if the chooses to re-enter value
+                if edit_choice == "Re-enter": # if the chooses to re-enter
+                    # value
                     value_choice = easygui.integerbox("Enter the value "
                         f"you would like to change the {stat_choice.lower()} "
                         "stat to", "Enter a Value",
@@ -332,52 +348,65 @@ def edit_card_stat(card_name):
         confirm = easygui.buttonbox("Confirm changing the "
             f"{stat_choice.lower()} for the {card_name} card from {old_value} "
             f"to {value_choice}?", "Confirmation",
-            choices=["Confirm", "Revert Changes"])
+            choices=["Confirm", "Revert Changes"]) # user can confirm or
+            # revert changes made to card
 
-        if confirm == "Confirm":
-            catalogue[card_name][stat_choice] = value_choice
+        if confirm == "Confirm": # if user chooses to confirm
+            catalogue[card_name][stat_choice] = value_choice # finds
+            # position of value choice
 
             print(f"\nedit_card: changes made to {card_name} card\n")
             for key, value in catalogue[card_name].items():
                 print(f"  {key}: {value}")
+            # ^^ prints changes to output
 
             edit_result = card_name + "\n" + "\n".join([f"  {key}: {value}"
                 for key, value in catalogue[card_name].items()])
             result_name = "Updated " + card_name + " Card"
+            # ^^ formatting for easygui
 
             easygui.msgbox(edit_result, result_name)
 
-            choice = easygui.buttonbox("Would you like to edit again?",
-                "Edit Again", choices = ["Edit a Stat",
-                "Edit Name", "Finish"])
+            edit_choice = easygui.buttonbox("Would you like to make "
+                "another edit with this card?",
+                "Edit Again", choices = ["Edit a Stat", "Edit Name",
+                "Finish"])
+            # ^^ gives the user the chance to make another edit or finish
 
-            if choice == "Edit a Stat": continue
-            elif choice == "Edit Name":
+            if edit_choice == "Edit a Stat": continue
+                # if user wants to make another stat edit within the card
+            elif edit_choice == "Edit Name":
+                # if the user wants to edit the card name
                 edit_card_name(card_name)
                 break
-            else: break
+            else: break # user selects finish, function quits
 
 def main_routine():
-    while True:
-        choice = easygui.buttonbox("Welcome to the Dungeons & Monsters"
-            "card database\nChoose an action", "Dungeons & Monsters Card "
-            "Database", choices = ['Add a Card', "Search for a Card",
-            "Edit Card", "Print the Catalogue", "Delete (Warning)", "Exit"])
+    """ Function which holds the main functionality of the program """
 
-        if choice == "Add a Card":
+    while True:
+        main_choice = easygui.buttonbox("Welcome to the Dungeons & "
+            "Monsters card database\nChoose an action", "Dungeons & "
+            "Monsters Card Database", choices = ['Add a Card',
+            "Search for a Card", "Edit Card", "Print the Catalogue",
+            "Delete (Warning)", "Exit"])
+            # ^^ user can select to use one of the functions
+
+        if main_choice == "Add a Card": # if add card is chosen, function is
+            # called
             add_card()
             continue
 
-        elif choice == "Search for a Card":
-            if catalogue == {}:
+        elif main_choice == "Search for a Card": # if search card is chosen
+            if catalogue == {}: # error checker for if catalogue is empty
                 easygui.msgbox("There is nothing on the catalogue yet.",
                 "Empty Catalogue")
                 continue
 
-            search_catalogue()
+            search_catalogue() # else program calls search card function
             continue
 
-        elif choice == "Delete (Warning)":
+        elif main_choice == "Delete (Warning)": # delete is chosen
             if catalogue == {}:
                 easygui.msgbox("There is nothing on the catalogue yet.",
                 "Empty Catalogue")
@@ -386,35 +415,42 @@ def main_routine():
             delete_choice = easygui.buttonbox("What would you like to "
                 "delete?","Delete",
                 choices = ["Card", "Catalogue (Warning)", "Cancel"])
+            # ^^ gives the user the choice to choose between deleting
+                # catalogue, a card, or cancelling
 
-            if delete_choice == "Catalogue (Warning)":
+            if delete_choice == "Catalogue (Warning)": # if user chooses to
+                # wipe the  catalogue
                 confirm = easygui.buttonbox("Are you sure you want to "
                     "delete the whole card catalogue?", "Confirm",
                     choices = ["Proceed","Cancel"])
+                    # ^^ gives user last chance to cancel, otherwise proceed
 
-                if confirm == "Proceed":
+                if confirm == "Proceed": # if user chose to proceed
                     catalogue.clear()
+                    print_catalogue()
                     continue
-                else: continue
+                else: continue # if user chose to cancel instead of proceed
 
-            elif delete_choice == "Card":
+            elif delete_choice == "Card": # executes if user wanted to
+                # delete a card
                 name = easygui.enterbox("Enter the name of the card you"
                 " would like to delete", "Delete Card")
                 delete_card(name)
-                main_routine()
+                continue
 
-            else: continue
+            else: continue # if user chose to cancel instead of delete an item
 
-        elif choice == "Print the Catalogue":
+        elif main_choice == "Print the Catalogue": # user chooses to print
             if catalogue == {}:
                 easygui.msgbox("There is nothing on the catalogue yet.",
                 "Empty Catalogue")
                 continue
             else:
-                print_catalogue()
+                print_catalogue() # print function called when error check
+                # successful
                 continue
 
-        elif choice == "Edit Card":
+        elif main_choice == "Edit Card": # user chooses to edit
             if catalogue == {}:
                 easygui.msgbox("There is nothing on the catalogue yet.",
                 "Empty Catalogue")
@@ -426,31 +462,48 @@ def main_routine():
                 name = string_check(name)
 
                 if name not in catalogue.keys():
+                    # checking code block below for if the card name
+                    # the user entered is in the catalogue or not
                     while name not in catalogue.keys() or None == name:
-                        """ Loop to check whether the name the user chose 
-                        for their new card is already on the catalogue """
 
                         easygui.msgbox(f"{name} is not a card on the"
                             f" catalogue!", "Invalid Name Chosen")
+                            # program alerts user of error
+
                         print("edit card: invalid - card entered not on "
-                        "catalogue\n") # print check
+                        "catalogue\n") # print check to output
 
                         name = easygui.enterbox("Enter the name of the "
                             "card you want to edit", "Card Name")
+                        # program makes the user enter a new card name
 
-                        if name is None: continue
+                        if name is None: break # check if user selected
+                        # cancel while entering a new card name
 
-                        if name in catalogue.keys():
+                        if name in catalogue.keys(): # card name is now
+                            # valid if the name they entered is in the
+                            # catalogue
+
                             print("edit card: valid - name on catalogue ")
-                            # print check
-                        else: continue
+                            # print check to output
+                        else: continue # else the while loop restarts
+
+                if name is None: continue
 
                 component_choice = easygui.buttonbox("Please select which"
                     f" part of the {name} card you would like to edit",
                     "Component Choice", choices=["Name", "Stat"])
+                    # ^^ after the error check, program allows the user to
+                        # choose whether they want to edit the card name or
+                        # stat
 
-                if component_choice == "Name": edit_card_name(name)
-                else: edit_card_stat(name)
-        break
+                if component_choice == "Name":
+                    edit_card_name(name)
+                    continue
+                else:
+                    edit_card_stat(name)
+                    continue
+                # ^^ depending on whether the user wants to edit the card
+                    # name or a stat, the corresponding function is called
 
 main_routine()
