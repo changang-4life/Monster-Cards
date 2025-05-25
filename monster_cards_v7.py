@@ -1,7 +1,6 @@
 """ Program for a friend which creates a card catalogue for their game.
 Jade Akinbo
 v7  - edit_card()
-    - added graphics
 """
 
 import easygui
@@ -259,13 +258,13 @@ def edit_card(card_name):
 
             card_name = card_name.title()
 
-            easygui.msgbox(f"⚠️🚨❌ {card_name} is not a card on the "
-                f"catalogue! ❌🚨⚠️", "Invalid Name Chosen")
+            easygui.msgbox(f"{card_name} is not a card on the "
+                f"catalogue!", "Invalid Name Chosen")
             print("edit card: invalid - card entered not on catalogue\n")
             # print check
 
-            card_name = easygui.enterbox("🖋📜 Enter the name of the card"
-                " you want to edit 📜🖋","Card Name")
+            card_name = easygui.enterbox("Enter the name of the card"
+                " you want to edit","Card Name")
 
             if card_name is None:
                 main_routine()
@@ -279,25 +278,24 @@ def edit_card(card_name):
                 continue
 
     global old_key, old_value
-    component_choice = easygui.buttonbox("✅ Please select which part of "
-        "the {card_name.title()} card you would like to edit ✅",
+    component_choice = easygui.buttonbox("Please select which part of "
+        "the {card_name.title()} card you would like to edit",
         "Component Choice",
         choices=["Name", "Stat"])
 
     if component_choice == "Name":
         while True:
-            new_name = easygui.enterbox("🖋📜 Please enter a new name for"
-                " the {card_name.title()} card 📜🖋", "New Name")
+            new_name = easygui.enterbox("Please enter a new name for"
+                " the {card_name.title()} card", "New Name")
             new_name = string_check(new_name)
 
             if new_name in catalogue.keys():
-                easygui.msgbox(f"⚠️🚨❌ {new_name} is already in use!"
-                    " ❌🚨⚠️",
+                easygui.msgbox(f"{new_name} is already in use!",
                     "Card Name in Use")
                 continue
 
-            confirm = easygui.buttonbox(f"⚠️ Confirm changing the"
-                f" {card_name.title()} card to {new_name}? ⚠️",
+            confirm = easygui.buttonbox(f"Confirm changing the"
+                f" {card_name.title()} card to {new_name}?",
                 "Confirmation", choices=["OK", "Re-enter", "Cancel"])
 
             if confirm == "OK":
@@ -310,12 +308,12 @@ def edit_card(card_name):
                 break
     elif component_choice == "Stat":
         while True:
-            stat_choice = easygui.buttonbox("⚔️ Choose which stat of the "
-                f"{card_name}you would like to edit ⚔️", "Stat Choice",
+            stat_choice = easygui.buttonbox("Choose which stat of the "
+                f"{card_name}you would like to edit", "Stat Choice",
                 choices = ["Strength", "Speed", "Stealth", "Cunning"])
 
-            value_input = easygui.integerbox("🖋📜 Enter the value you "
-                "would like to change the {stat_choice.lower()} stat to 📜🖋",
+            value_input = easygui.integerbox("Enter the value you "
+                f"would like to change the {stat_choice.lower()} stat to",
                 "Enter a Value", lowerbound=1, upperbound=25)
 
             if value_input is None:
@@ -354,9 +352,9 @@ def edit_card(card_name):
                     # key value pair that the iteration is up to gets added as
                     # normal to the empty updated_card dictionary
 
-            confirm = easygui.buttonbox("⚠️Confirm changing the "
+            confirm = easygui.buttonbox("Confirm changing the "
                 f"{stat_choice.lower()} for the {card_name} card from "
-                f"{old_value} to {value_input}? ⚠️", "Confirmation",
+                f"{old_value} to {value_input}?", "Confirmation",
                 choices = ["Confirm", "Revert Changes"])
 
             if confirm == "Confirm":
@@ -370,10 +368,8 @@ def edit_card(card_name):
                 edit_result = card_name + "\n" + "\n".join([f"  {key}: {value}"
                     for key, value in updated_card.items()])
                 result_name = "Updated " + card_name.title() + " Card"
-
                 easygui.msgbox(edit_result, result_name)
                 break
-
             else: break
 
 def main_routine():
