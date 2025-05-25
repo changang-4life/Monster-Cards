@@ -1,10 +1,11 @@
 """ Program for a friend which creates a card catalogue for their game.
 Jade Akinbo
 v10 - Final Version
-        - End user testing related changes made (regarding print output)
+        - end user testing related changes made here (regarding print output)
         - main_routine() calling fixes
         - changed stat data type from string to int for simplicity's sake
         - more descriptive comments
+        - added graphics
         - other minor fix-ups / illogical code / inconsistencies
 """
 
@@ -111,28 +112,28 @@ def add_card():
 
         if card_name in catalogue.keys():
             # executes if the name the user enters is already on the catalogue
-            add_choice = easygui.buttonbox(f"{card_name} is already on the "
-                f"catalogue!","Card Already on Catalogue",
+            add_choice = easygui.buttonbox(f"{card_name} is already on "
+                "the catalogue!","Card Already on Catalogue",
                 choices = ["Enter a new name", "Cancel"])
             if add_choice == "Enter a new name":
                 continue
-            else: return
+            else: break
 
         card_strength = easygui.integerbox("Enter the strength stat",
             "Strength Value", lowerbound = 1, upperbound = 25)
-        if card_strength is None: return
+        if card_strength is None: break
 
         card_speed = easygui.integerbox("Enter the speed stat",
             "Speed Value", lowerbound = 1, upperbound = 25)
-        if card_speed is None: return
+        if card_speed is None: break
 
         card_stealth = easygui.integerbox("Enter the stealth stat",
             "Stealth Value", lowerbound = 1, upperbound = 25)
-        if card_stealth is None: return
+        if card_stealth is None: break
 
         card_cunning = easygui.integerbox("Enter the cunning stat",
             "Cunning Value", lowerbound = 1, upperbound = 25)
-        if card_cunning is None: return
+        if card_cunning is None: break
 
         # ^^ allows the user to enter card strength, speed, stealth and cunning
             # stats
@@ -157,8 +158,23 @@ def add_card():
         result_name = card_name + " Card"
         # ^^ formatting for easygui output
 
-        easygui.msgbox(result_name + "\n" + results,
-            "Card Successfully Added!")
+        add_choice = easygui.buttonbox("Would you like to confirm these "
+            "changes?\n" + f"\n{result_name}\n {results}", "Confirmation",
+            choices = ["Confirm", "Revert Changes", "Edit Card Name",
+                "Edit Card Stat"])
+
+        if add_choice == "Confirm":
+            print_catalogue()
+            break
+        elif add_choice == "Revert Changes":
+            del catalogue[card_name]
+            break
+        elif add_choice == "Edit Card Name":
+            edit_card_name(card_name)
+            break
+        elif add_choice == "Edit Card Stat":
+            edit_card_stat(card_name)
+            break
 
 def search_catalogue():
     """ Function for searching for an existing card within the catalogue """
@@ -237,14 +253,7 @@ def delete_card(card_name):
 
             if confirm == "Yes": # if they want to confirm changes
                 del catalogue[card_name]
-
-                full_list = "\n\n".join([card + " Card\n" + "\n".join([
-                    f"  {key}: {value}" for key, value in card_info.items()])
-                    for card, card_info in catalogue.items()]) # formatting for
-                    # easygui
-
-                easygui.msgbox("Here is the new catalogue\n\n" + full_list,
-                    "Updated Catalogue")
+                print_catalogue()
 
             else: break # if the user does not want to confirm changes
 
@@ -293,13 +302,20 @@ def edit_card_name(card_name):
         confirm = easygui.buttonbox(f"Confirm changing the"
             f" {card_name} card to {new_name}",
             "Confirmation",
-            choices=["OK", "Re-enter","Cancel"]) # gives the user the option
+            choices=["OK", "Re-enter", "Cancel"]) # gives the user the option
                 # to confirm, re-enter, or cancel changes
 
         if confirm == "OK":
             catalogue[new_name] = catalogue[card_name] # creates copy of the
             # old card they wanted to edit, but uses the new name
             del catalogue[card_name] # deletes the old card from catalogue
+
+            results = "\n".join([f"  {key}: {value}" for key, value in
+                catalogue[new_name].items()])
+            result_name = new_name + " Card" # formatting for easygui
+
+            easygui.msgbox(result_name + "\n" + results,"New Edited Card")
+            # prints out changed card to user
             break
         elif confirm == "Re-enter": # if user chose to re-enter,
             continue # the loop goes back to the beginning
