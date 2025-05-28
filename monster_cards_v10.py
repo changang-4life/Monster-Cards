@@ -86,7 +86,9 @@ catalogue = \
 
 def string_check(name):
     """ Only allows names with letters and spaces, must be at least 4
-    characters long (excluding spaces) but not more than 15 characters long."""
+    characters long (excluding spaces) but not more than 15 characters long.
+    Spaces are not permitted """
+
     min_char_length = 4
     max_char_length = 15
     # ^^ variables so editors can change the character error checking easily
@@ -96,22 +98,23 @@ def string_check(name):
         # if user chooses to cancel input, None is returned so parent
             # function can handle the rest
         else:
-            name_stripped = name.replace(" ", "")
-            if (name_stripped.isalpha() and min_char_length <=
-                len(name_stripped) <= max_char_length):
+            if (name.isalpha() and min_char_length <=
+                len(name) <= max_char_length):
             # character length checker that does not allow names under 4
                 # characters and names over 15. can be changed if needed
                 return name.title()
             else: # if the character length is invalid
                 name = easygui.enterbox("❌ Enter a valid name ❌"
-                "\n(Letters and spaces only, min 4 letters, max 15 letters)",
+                "\n Please ensure that the name does not:\n"
+                f"    > Have any spaces\n    > Less than {min_char_length} "
+                f"characters\n    > More than {max_char_length} characters",
                 "⚠️ Invalid Name")
 
 def add_card():
     """ Function which allows the user to add a card to the catalogue """
     while True:
-        card_name = easygui.enterbox("Enter the name of your new card",
-            "Card Name")
+        card_name = easygui.enterbox("Enter the name of your new card "
+            "𓂃🪶","Card Name")
         card_name = string_check(card_name) # string error checking
 
         if card_name in catalogue.keys():
