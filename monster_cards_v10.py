@@ -253,10 +253,10 @@ def delete_card(card_name):
 
             confirm = easygui.buttonbox("Confirm the deletion of "
                 f"the {card_name} card?", "Confirm Deletion",
-                choices=["Yes ✅", "Cancel ❌"]) # allows the user to choose
+                choices=["Confirm ✅", "Cancel ❌"]) # allows the user to choose
                 # whether they want to confirm deletion
 
-            if confirm == "Yes ✅": # if they want to confirm changes
+            if confirm == "Confirm ✅": # if they want to confirm changes
                 del catalogue[card_name] # card is deleted
                 print_catalogue() # catalogue printed to confirm
                 break # function ends
