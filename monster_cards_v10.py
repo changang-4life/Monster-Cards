@@ -99,10 +99,12 @@ def string_check(name):
     # ^^ constants editors can use to change the character error checking
         # easily
 
-    while True:
-        if name is None: return None
-        # if user chooses to cancel input, None is returned so parent
-            # function can handle the rest
+    input_cancel = False
+    # ^^ bool variable to control string checking loop
+
+    while not input_cancel: # while input_cancel is false
+        if name is None: input_cancel = True
+        # if user chooses to cancel input, loop ends, else, loop continues
         else:
             if (name.isalpha() and min_char_length <=
                 len(name) <= max_char_length):
@@ -252,8 +254,8 @@ def delete_card(card_name):
 
             confirm = easygui.buttonbox("Confirm the deletion of "
                 f"the {card_name} card?", "Confirm Deletion",
-                choices=["Confirm ✅", "Cancel ❌"]) # allows the user to choose
-                # whether they want to confirm deletion
+                choices=["Confirm ✅", "Cancel ❌"]) # allows the user to
+                # choose whether they want to confirm deletion
 
             if confirm == "Confirm ✅": # if they want to confirm changes
                 del catalogue[card_name] # card is deleted
@@ -431,7 +433,9 @@ def edit_card_stat(card_name):
 def main_routine():
     """ Function which holds the main functionality of the program """
 
-    while True:
+    user_exit = False # bool variable to control main routine loop
+
+    while not user_exit: # while user exit is false
         main_choice = easygui.buttonbox("⋆༺𓆩⚔𓆪 Welcome to the "
             "Dungeons & Monsters card database! 🏹\n        "
             "Choose an action ⋆༺𓆩⚔𓆪༻⋆","Dungeons & Monsters Card "
@@ -543,7 +547,8 @@ def main_routine():
                 continue
             else: continue # goes back to main screen if user cancels
 
-        else: # if user selects exit on the menu screen, program quits
-            break
+        else: user_exit = True
+            # ^^ if user selects exit on the menu screen, user exit is true,
+            # loop ends
 
 main_routine()
