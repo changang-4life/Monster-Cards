@@ -135,7 +135,6 @@ def add_card():
                 continue
             else: break
 
-
         card_strength = easygui.integerbox("⚔️🏹 Enter the strength stat",
             "Strength Value", lowerbound = stat_min,upperbound = stat_max)
         if card_strength is None: break
@@ -424,7 +423,6 @@ def edit_card_stat(card_name):
             # ^^ formatting for easygui
 
             easygui.msgbox(edit_result, result_name)
-
 
 def main_routine():
     """ Function which holds the main functionality of the program """
